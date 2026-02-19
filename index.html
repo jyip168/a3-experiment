@@ -1,9 +1,272 @@
 <!DOCTYPE html>
-<div id="container"></div>
 <script type="module">
 
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-
 console.log(d3);
 
+const participantId = Math.random().toString(36).substring(2,10);
+
+const width = 500;
+const height = 300;
+
+
+let trial;
+let visual;
+let trialCount = 0;
+const totalTrialsPer = 20;
+let experimentData = [];
+
+const visualizations = {
+    "horizontal_bar": 0, 
+    "vertical_bar": 0, 
+    "pie": 0
+};
+
+function displayFinished() {
+    d3.select("#instructions")
+        .text("The experiment has concluded. Please copy your results.");
+
+    d3.select("#submit")
+        .style("display", "none");
+    d3.select("#response")
+        .style("display", "none");
+
+    
+    let csv = "participantId,visual,trialCount,truePercentage,userAnswer,error\n";
+    experimentData.forEach(d => {
+        csv += `${d.participantId},${d.visual},${d.trialCount},${d.truePercentage},${d.userAnswer},${d.error}\n`
+    });
+
+    d3.select("#csv_header")
+        .style("display", "block");
+    d3.select("#csv_paste")
+        .style("display", "block")
+        .property("value", csv);
+    
+}
+
+function clearVis() {
+    d3.select("#container").selectAll("*").remove();
+}
+
+function generateTrialData() {
+    const numPoints = 5;
+
+    const data = d3.range(numPoints).map(() => 
+        Math.floor(Math.random() * 101)
+    );
+
+    let pointA = Math.floor(Math.random() * numPoints);
+    let pointB;
+    do {
+        pointB = Math.floor(Math.random() * numPoints);
+    } while (pointA === pointB);
+
+    if(data[pointA] > data[pointB]) {
+        const temp = pointA;
+        pointA = pointB;
+        pointB = temp;
+    }
+
+    return {
+        data,
+        pointA,
+        pointB,
+    }
+}
+
+function drawHorizontalBarChart() {
+    const svg = d3.select("#container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    
+    const x = d3.scaleLinear()
+        .domain([0, 100])
+        .range([20, width - 40]);
+    
+    const y = d3.scaleBand()
+        .domain(d3.range(trial.data.length))
+        .range([60, height - 20])
+        .padding(0.2);
+    
+    const xAxis = d3.axisTop(x).ticks(1).tickFormat(d => d + "%");
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis)
+    
+    svg.selectAll("rect")
+        .data(trial.data)
+        .enter()
+        .append("rect")
+        .attr("x", x(0))
+        .attr("y", (d, i) => y(i))
+        .attr("width", d => x(d) - x(0))
+        .attr("height", y.bandwidth())
+        .attr("fill", "white")
+        .attr("stroke", "black");
+    
+    [trial.pointA, trial.pointB].forEach(i => {
+        svg.append("circle")
+            .attr("cx", x(0) - 10)
+            .attr("cy", y(i) + y.bandwidth()/2)
+            .attr("r", 4)
+            .attr("fill", "black");
+    })
+}
+
+function drawVerticalBarChart() {
+    const svg = d3.select("#container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    
+    const x = d3.scaleBand()
+        .domain(d3.range(trial.data.length))
+        .range([60, width - 20])
+        .padding(0.2);
+    
+    const y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([height - 40, 20]);
+    
+    const yAxis = d3.axisLeft(y).ticks(1).tickFormat(d => d + "%");
+    svg.append("g")
+        .attr("transform", `translate(60, 0)`)
+        .call(yAxis)
+    
+    svg.selectAll("rect")
+        .data(trial.data)
+        .enter()
+        .append("rect")
+        .attr("x", (d, i) => x(i))
+        .attr("y", d => y(d))
+        .attr("width", x.bandwidth())
+        .attr("height", d => y(0) - y(d))
+        .attr("fill", "white")
+        .attr("stroke", "black");
+    
+    [trial.pointA, trial.pointB].forEach(i => {
+        svg.append("circle")
+            .attr("cx", x(i) + x.bandwidth()/2)
+            .attr("cy", y(0) + 10)
+            .attr("r", 4)
+            .attr("fill", "black");
+    })
+}
+
+function drawPieChart() {
+    const svg = d3.select("#container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    
+    const radius = Math.min(width, height) / 2 - 10;
+    const g = svg.append("g").attr("transform", `translate(${width/2},${height/2})`);
+
+    const pie = d3.pie()(trial.data);
+    const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius);
+
+    g.selectAll("path")
+        .data(pie)
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .attr("fill", "white")
+        .attr("stroke", "black");
+    
+    [trial.pointA, trial.pointB].forEach(i => {
+        const [cx, cy] = arc.centroid(pie[i])
+        g.append("circle")
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", 4)
+            .attr("fill", "black");
+    });
+
+}
+
+
+
+function drawTrial() {
+    clearVis();
+
+    if(trialCount >= totalTrialsPer * Object.keys(visualizations).length) {
+        displayFinished();
+        return;
+    }
+
+    trialCount++;
+    d3.select("#question")
+        .text(`Question ${trialCount}/${totalTrialsPer * Object.keys(visualizations).length}`);
+
+    trial = generateTrialData();
+
+
+    const validVisuals = Object.keys(visualizations).filter(key => visualizations[key] < totalTrialsPer);
+
+    if(validVisuals.length === 0) return;
+
+    visual = validVisuals[Math.floor(Math.random() * validVisuals.length)]
+    visualizations[visual] += 1;
+
+    if(visual === "horizontal_bar") drawHorizontalBarChart();
+    if(visual === "vertical_bar") drawVerticalBarChart();
+    if(visual === "pie") drawPieChart();
+}
+
+function computeTruePercentage() {
+    return Math.round(trial.data[trial.pointA] / trial.data[trial.pointB] * 100)
+}
+
+function computeError(userAnswer) {
+    const truePercentage = computeTruePercentage();
+    if(userAnswer === truePercentage) return 0;
+    else return Math.log2(Math.abs(userAnswer - truePercentage) + 1/8)
+}
+
+function storeTrial(userAnswer) {
+    const error = computeError(userAnswer);
+
+    experimentData.push({
+        participantId,
+        visual,
+        trialCount,
+        truePercentage: computeTruePercentage(),
+        userAnswer,
+        error
+    });
+}
+
+document.getElementById("submit").onclick = () => {
+    const responseInput = document.getElementById("response");
+    const userAnswer = parseFloat(responseInput.value);
+    if(!isNaN(userAnswer)) {
+        storeTrial(userAnswer);
+        drawTrial();
+        responseInput.value = "";
+    }
+};
+
+drawTrial();
+
 </script>
+<body>
+    <h1 id="question">Question 0/0</h1>
+    <p id="instructions">
+        The two values are marked with dots.<br>
+        What percentage do you believe the smaller section represents relative to the larger section?<br>
+        (Ex: If the smaller section appears to be 35% of the larger section, input "35" into the text box and then hit "Submit")
+    </p>
+    <div id="container"></div>
+    <br><br>
+    <input id="response" type="number"> 
+    <button id="submit">Submit</button>
+    
+    <h2 id="csv_header" style="display: none">CSV Paste</p>
+    <textarea id="csv_paste" rows="10" cols="80" style="display: none" disabled></textarea>
+</body>
+
+

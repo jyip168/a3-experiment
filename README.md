@@ -110,3 +110,25 @@ GitHub Details
 ```
 a3-FirstLastnameMember1-FirstLastnameMember2-FirstLastnameMember3-...
 ```
+
+
+
+Website Link
+---
+
+(link)
+
+Experiment Description
+---
+
+(describe) 
+(screenshots)
+(results)
+
+
+Technical Achievements
+---
+
+
+Design Achievments
+---
