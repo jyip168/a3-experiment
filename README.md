@@ -141,7 +141,7 @@ The final possible visual the user could receive is a pie chart.
 
 The final rankings of each visual's average errors across all trials.
 
-          visual    avg log2Error
+visual    avg log2Error
 1   vertical_bar 1.490173
 2 horizontal_bar 1.599658
 3            pie 2.209033
