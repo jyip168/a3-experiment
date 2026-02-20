@@ -23,6 +23,8 @@ const visualizations = {
 };
 
 function displayFinished() {
+    d3.select("#question")
+        .text("All Questions Completed");
     d3.select("#instructions")
         .text("The experiment has concluded. Please download your results.");
 
@@ -48,6 +50,8 @@ function displayFinished() {
             link.download = "results.csv";
             link.click();
         });
+    
+    d3.select("#progress-bar").attr("value", 100);
 }
 
 function clearVis() {
@@ -220,6 +224,10 @@ function drawTrial() {
     if(visual === "horizontal_bar") drawHorizontalBarChart();
     if(visual === "vertical_bar") drawVerticalBarChart();
     if(visual === "pie") drawPieChart();
+
+
+    const progressPercentage = ((trialCount - 1) / (totalTrialsPer * Object.keys(visualizations).length)) * 100;
+    d3.select("#progress-bar").attr("value", progressPercentage);
 }
 
 function computeTruePercentage() {
@@ -259,8 +267,24 @@ document.getElementById("submit").onclick = () => {
 drawTrial();
 
 </script>
+<style>
+    #progress-bar {
+        width: 80%;
+        height: 20px;
+        border: 1px solid black;
+        background-color: white;
+    }
+    #progress-bar::-webkit-progress-value {
+        background-color: black;
+    }
+    #progress-bar::-moz-progress-value {
+        background-color: black;
+    }
+
+</style>
 <body>
     <h1 id="question">Question 0/0</h1>
+    <progress id="progress-bar" value="0" max="100"></progress>
     <p id="instructions">
         The two values are marked with dots.<br>
         What percentage do you believe the smaller section represents relative to the larger section?<br>

@@ -156,5 +156,4 @@ Technical Achievements
 
 Design Achievments
 ---
-- .
-- .
+- Added a progress bar for users to see to get a better idea of their completion progress for the questions.
