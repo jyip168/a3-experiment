@@ -136,7 +136,6 @@ Another type of visual the user could receive is a horizontally aligned bar char
 The final possible visual the user could receive is a pie chart.
 
 ![Sample pie chart](img/pie_chart.png)
-(results)
 
 
 The final rankings of each visual's average errors across all trials.
