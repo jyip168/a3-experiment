@@ -152,8 +152,9 @@ The chart here is a representation of the Bootstrapped confidence intervals. Com
 
 Technical Achievements
 ---
-- .
+- Opted to allow the user to download a csv file of their results. I originally had the csv given through a copy-paste in a text box, but ended up figuring out how to make a direct download instead.
 
 Design Achievments
 ---
+- .
 - .

@@ -24,7 +24,7 @@ const visualizations = {
 
 function displayFinished() {
     d3.select("#instructions")
-        .text("The experiment has concluded. Please copy your results.");
+        .text("The experiment has concluded. Please download your results.");
 
     d3.select("#submit")
         .style("display", "none");
@@ -37,12 +37,17 @@ function displayFinished() {
         csv += `${d.participantId},${d.visual},${d.trialCount},${d.truePercentage},${d.userAnswer},${d.error}\n`
     });
 
-    d3.select("#csv_header")
-        .style("display", "block");
-    d3.select("#csv_paste")
+    const csvBlob = new Blob([csv], { type: "text/csv"});
+    const csvUrl = URL.createObjectURL(csvBlob);
+
+    d3.select("#download")
         .style("display", "block")
-        .property("value", csv);
-    
+        .on("click", () => {
+            const link = document.createElement("a");
+            link.href = csvUrl;
+            link.download = "results.csv";
+            link.click();
+        });
 }
 
 function clearVis() {
@@ -266,8 +271,7 @@ drawTrial();
     <input id="response" type="number"> 
     <button id="submit">Submit</button>
     
-    <h2 id="csv_header" style="display: none">CSV Paste</p>
-    <textarea id="csv_paste" rows="10" cols="80" style="display: none" disabled></textarea>
+    <button id="download"style="display: none">Download your results</button>
 </body>
 
 
