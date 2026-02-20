@@ -90,7 +90,7 @@ function drawHorizontalBarChart() {
         .range([60, height - 20])
         .padding(0.2);
     
-    const xAxis = d3.axisTop(x).ticks(1).tickFormat(d => d + "%");
+    const xAxis = d3.axisTop(x).ticks(1).tickFormat(d => d);
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(xAxis)
@@ -130,7 +130,7 @@ function drawVerticalBarChart() {
         .domain([0, 100])
         .range([height - 40, 20]);
     
-    const yAxis = d3.axisLeft(y).ticks(1).tickFormat(d => d + "%");
+    const yAxis = d3.axisLeft(y).ticks(1).tickFormat(d => d);
     svg.append("g")
         .attr("transform", `translate(60, 0)`)
         .call(yAxis)
@@ -218,6 +218,7 @@ function drawTrial() {
 }
 
 function computeTruePercentage() {
+    if(trial.data[trial.pointB] == 0) return 0
     return Math.round(trial.data[trial.pointA] / trial.data[trial.pointB] * 100)
 }
 

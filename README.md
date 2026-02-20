@@ -121,14 +121,39 @@ Website Link
 Experiment Description
 ---
 
-(describe) 
-(screenshots)
+Testing was done by asking the participant to answer 60 questions that were randomly generated and given in a random order. There were 3 types of visuals with 20 questions for each visual. Each of the questions asked the participant what percentage do they think the smaller marked section is in size compared to the larger marked section. 
+
+
+One of the types of visuals the user could receive is a vertically aligned bar chart.
+
+![Sample vertical bar chart](img/vertical_bar_chart.png)
+
+Another type of visual the user could receive is a horizontally aligned bar chart.
+
+![Sample horizontal bar chart](img/horizontal_bar_chart.png)
+
+The final possible visual the user could receive is a pie chart.
+
+![Sample pie chart](img/pie_chart.png)
 (results)
+
+
+The final rankings of each visual's average errors across all trials.
+
+          visual    avg log2Error
+1   vertical_bar 1.490173
+2 horizontal_bar 1.599658
+3            pie 2.209033
+
+![Bootstrapped confidence intervals of errors for each visual](img/visual_performance.png)
+
+The chart here is a representation of the Bootstrapped confidence intervals. Comparing the results to Cleveland and McGill's results shows that the interpretation by participants were fairly similar. Participants had a much easier time identifying the horizontal and vertical bar charts with less than 2 error on average. Although in this test, vertical bar charts performed slightly better than horizontal bar charts. Meanwhile, pie charts gave more difficulty with having closer to 2 error on average. This pattern matches up with Cleveland and McGill. 
 
 
 Technical Achievements
 ---
-
+- .
 
 Design Achievments
 ---
+- .
